@@ -2,7 +2,7 @@ import React from 'react';
 import { CarIcon } from './icons';
 
 interface HeaderProps {
-    onLogin: (file?: File) => void;
+    onLogin: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({ onLogin }) => {

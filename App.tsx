@@ -4,22 +4,17 @@ import Dashboard from './Dashboard';
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [initialFile, setInitialFile] = useState<File | null>(null);
 
-  const handleLogin = (file?: File) => {
-    if (file) {
-      setInitialFile(file);
-    }
+  const handleLogin = () => {
     setIsLoggedIn(true);
   };
   
   const handleLogout = () => {
     setIsLoggedIn(false);
-    setInitialFile(null);
   };
 
   if (isLoggedIn) {
-    return <Dashboard onLogout={handleLogout} initialFile={initialFile} />;
+    return <Dashboard onLogout={handleLogout} />;
   }
 
   return <LandingPage onLogin={handleLogin} />;
