@@ -1,0 +1,5 @@
+{
+  "name": "DriveDiagram",
+  "description": "An AI-powered web application that transforms complex, cluttered screenshots and images of driving scenarios into clean, professional cartoon-style diagrams for educational purposes.",
+  "requestFramePermissions": []
+}
