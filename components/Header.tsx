@@ -2,10 +2,10 @@ import React from 'react';
 import { CarIcon } from './icons';
 
 interface HeaderProps {
-    onLogin: () => void;
+    onSignInClick: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onLogin }) => {
+export const Header: React.FC<HeaderProps> = ({ onSignInClick }) => {
   return (
     <header className="bg-white shadow-md sticky top-0 z-10">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -18,9 +18,9 @@ export const Header: React.FC<HeaderProps> = ({ onLogin }) => {
         <nav className="hidden md:flex items-center gap-6">
           <a href="#" onClick={(e) => e.preventDefault()} className="text-brand-gray-700 hover:text-brand-blue transition-colors font-medium">Features</a>
           <a href="#" onClick={(e) => e.preventDefault()} className="text-brand-gray-700 hover:text-brand-blue transition-colors font-medium">Pricing</a>
-          <button onClick={() => onLogin()} className="text-brand-gray-700 hover:text-brand-blue transition-colors font-medium">Sign In</button>
+          <button onClick={onSignInClick} className="text-brand-gray-700 hover:text-brand-blue transition-colors font-medium">Sign In</button>
         </nav>
-        <button onClick={() => onLogin()} className="hidden md:inline-block bg-brand-blue text-white font-semibold px-5 py-2 rounded-lg hover:bg-brand-blue-dark transition-colors">
+        <button onClick={onSignInClick} className="hidden md:inline-block bg-brand-blue text-white font-semibold px-5 py-2 rounded-lg hover:bg-brand-blue-dark transition-colors">
           Sign Up
         </button>
         <button className="md:hidden p-2">

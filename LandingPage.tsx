@@ -6,15 +6,15 @@ import { Generator } from './components/Generator';
 import { LimitReachedModal } from './components/LimitReachedModal';
 
 interface LandingPageProps {
-  onLogin: () => void;
+  onSignInClick: () => void;
 }
 
-const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
+const LandingPage: React.FC<LandingPageProps> = ({ onSignInClick }) => {
   const [showLimitModal, setShowLimitModal] = useState(false);
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-brand-gray-900">
-      <Header onLogin={onLogin} />
+      <Header onSignInClick={onSignInClick} />
       <main className="flex-grow container mx-auto px-4 py-8 md:py-12">
         <div className="text-center max-w-3xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Transform Road Chaos into Clear Diagrams</h1>
@@ -34,7 +34,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
       <LimitReachedModal 
         isOpen={showLimitModal}
         onClose={() => setShowLimitModal(false)}
-        onSignUp={onLogin}
+        onSignUp={onSignInClick}
       />
     </div>
   );
