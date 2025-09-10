@@ -9,11 +9,23 @@ const App: React.FC = () => {
 
   useEffect(() => {
     // Check if user is already logged in on app load
-    const authState = authService.getAuthState();
-    if (authState.isAuthenticated) {
-      setUser(authState.user);
-      setIsLoggedIn(true);
-    }
+    const checkAuth = async () => {
+      const authState = await authService.getAuthState();
+      if (authState.isAuthenticated) {
+        setUser(authState.user);
+        setIsLoggedIn(true);
+      }
+    };
+    
+    checkAuth();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = authService.onAuthStateChange((user) => {
+      setUser(user);
+      setIsLoggedIn(!!user);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const handleLogin = async (email: string, password: string) => {
@@ -36,10 +48,14 @@ const App: React.FC = () => {
     }
   };
   
-  const handleLogout = () => {
-    authService.logout();
-    setUser(null);
-    setIsLoggedIn(false);
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      setUser(null);
+      setIsLoggedIn(false);
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   if (isLoggedIn) {
