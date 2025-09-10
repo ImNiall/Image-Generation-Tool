@@ -35,7 +35,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onSignup }) => {
       <LimitReachedModal 
         isOpen={showLimitModal}
         onClose={() => setShowLimitModal(false)}
-        onSignUp={onLogin}
+        onSignUp={() => {}} // Will be handled by Header modals
       />
     </div>
   );

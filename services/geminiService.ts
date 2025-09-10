@@ -3,13 +3,11 @@ import { GoogleGenAI, Modality, Part } from "@google/genai";
 import { GEMINI_IMAGE_EDIT_MODEL, AI_PROMPT } from '../constants';
 import type { DiagramResult } from '../types';
 
-const apiKey = (import.meta as any).env.VITE_API_KEY;
-
-if (!apiKey) {
-    console.warn("VITE_API_KEY environment variable not set. Using mock data.");
+if (!process.env.API_KEY) {
+    console.warn("API_KEY environment variable not set. Using mock data.");
 }
 
-const ai = new GoogleGenAI({ apiKey: apiKey || 'mock-key' });
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || 'mock-key' });
 
 const fileToGenerativePart = (base64Data: string, mimeType: string): Part => {
   return {
@@ -22,7 +20,7 @@ const fileToGenerativePart = (base64Data: string, mimeType: string): Part => {
 
 export const transformImageToDiagram = async (base64ImageData: string, mimeType: string): Promise<Pick<DiagramResult, 'imageUrl' | 'explanation'>> => {
   // MOCK BEHAVIOR FOR DEVELOPMENT if API_KEY is missing
-  if (!apiKey) {
+  if (!process.env.API_KEY) {
     return new Promise(resolve => {
       setTimeout(() => {
         resolve({
