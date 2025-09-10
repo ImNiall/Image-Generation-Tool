@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CarIcon } from './icons';
+import { LoginModal } from './LoginModal';
+import { SignupModal } from './SignupModal';
 
 interface HeaderProps {
-    onLogin: () => void;
+    onLogin: (email: string, password: string) => void;
+    onSignup: (email: string, password: string, name: string) => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onLogin }) => {
+export const Header: React.FC<HeaderProps> = ({ onLogin, onSignup }) => {
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showSignupModal, setShowSignupModal] = useState(false);
   return (
     <header className="bg-white shadow-md sticky top-0 z-10">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -18,9 +23,9 @@ export const Header: React.FC<HeaderProps> = ({ onLogin }) => {
         <nav className="hidden md:flex items-center gap-6">
           <a href="#" onClick={(e) => e.preventDefault()} className="text-brand-gray-700 hover:text-brand-blue transition-colors font-medium">Features</a>
           <a href="#" onClick={(e) => e.preventDefault()} className="text-brand-gray-700 hover:text-brand-blue transition-colors font-medium">Pricing</a>
-          <button onClick={() => onLogin()} className="text-brand-gray-700 hover:text-brand-blue transition-colors font-medium">Sign In</button>
+          <button onClick={() => setShowLoginModal(true)} className="text-brand-gray-700 hover:text-brand-blue transition-colors font-medium">Sign In</button>
         </nav>
-        <button onClick={() => onLogin()} className="hidden md:inline-block bg-brand-blue text-white font-semibold px-5 py-2 rounded-lg hover:bg-brand-blue-dark transition-colors">
+        <button onClick={() => setShowSignupModal(true)} className="hidden md:inline-block bg-brand-blue text-white font-semibold px-5 py-2 rounded-lg hover:bg-brand-blue-dark transition-colors">
           Sign Up
         </button>
         <button className="md:hidden p-2">
@@ -29,6 +34,26 @@ export const Header: React.FC<HeaderProps> = ({ onLogin }) => {
             </svg>
         </button>
       </div>
+      
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onLogin={onLogin}
+        onSwitchToSignup={() => {
+          setShowLoginModal(false);
+          setShowSignupModal(true);
+        }}
+      />
+      
+      <SignupModal
+        isOpen={showSignupModal}
+        onClose={() => setShowSignupModal(false)}
+        onSignup={onSignup}
+        onSwitchToLogin={() => {
+          setShowSignupModal(false);
+          setShowLoginModal(true);
+        }}
+      />
     </header>
   );
 };
