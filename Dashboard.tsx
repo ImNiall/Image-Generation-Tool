@@ -8,13 +8,14 @@ import { DashboardHome } from './components/DashboardHome';
 import { ProfilePage } from './components/ProfilePage';
 import { Lightbox } from './components/Lightbox';
 import { Generator } from './components/Generator';
+import { ImageEditor } from './components/ImageEditor';
 
 
 interface DashboardProps {
   onLogout: () => void;
 }
 
-type View = 'overview' | 'generator' | 'library' | 'profile';
+export type View = 'overview' | 'generator' | 'library' | 'profile' | 'editor';
 
 const MOCK_USER: User = {
   name: 'Alex Doe',
@@ -91,6 +92,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
             onExpand={handleExpand}
           />
         );
+      case 'editor':
+        return <ImageEditor />;
       case 'library':
         return <Library diagrams={savedDiagrams} onDelete={handleDeleteFromLibrary} onExpand={handleExpand} />;
       case 'profile':
