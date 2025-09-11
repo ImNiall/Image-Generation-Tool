@@ -50,31 +50,41 @@ const App: React.FC = () => {
   }, []);
 
   const handleLogin = async (email: string, password: string) => {
-    try {
-      const user = await authService.login(email, password);
-      setUser(user);
-      setIsLoggedIn(true);
-    } catch (error) {
-      throw error; // Let the modal handle the error
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) {
+      throw new Error(error.message);
     }
+    // User state will be updated via onAuthStateChange listener
   };
 
   const handleSignup = async (email: string, password: string, name: string) => {
-    try {
-      await authService.signup(email, password, name);
-      // User will be automatically logged in after signup
-    } catch (error) {
-      console.error('Signup failed:', error);
-      // Handle signup error (show error message to user)
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          name: name
+        }
+      }
+    });
+
+    if (error) {
+      throw new Error(error.message);
     }
+    // User will be automatically logged in after signup via onAuthStateChange
   };
 
   const handleResetPassword = async (email: string) => {
-    try {
-      await authService.resetPassword(email);
-    } catch (error) {
-      console.error('Password reset failed:', error);
-      throw error; // Re-throw to let the modal handle the error
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `https://theinstructorshub.co.uk`
+    });
+
+    if (error) {
+      throw new Error(error.message);
     }
   };
 
@@ -84,14 +94,11 @@ const App: React.FC = () => {
   };
   
   const handleLogout = async () => {
-    try {
-      await authService.logout();
-      setUser(null);
-      setIsLoggedIn(false);
-      setShowPasswordReset(false);
-    } catch (error) {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
       console.error('Logout error:', error);
     }
+    // User state will be updated via onAuthStateChange listener
   };
 
   return (
