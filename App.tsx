@@ -3,6 +3,7 @@ import Dashboard from './Dashboard';
 import LandingPage from './LandingPage';
 import { PasswordResetPage } from './components/PasswordResetPage';
 import { authService, User } from './services/authService';
+import { supabase } from './lib/supabase';
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -10,48 +11,42 @@ const App: React.FC = () => {
   const [showPasswordReset, setShowPasswordReset] = useState(false);
 
   useEffect(() => {
-    // Check if user is already logged in on app load
-    const checkAuth = async () => {
-      const authState = await authService.getAuthState();
-      if (authState.isAuthenticated) {
-        setUser(authState.user);
+    // Check for an existing session on initial load
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
         setIsLoggedIn(true);
-        
-        // Check if this is a password reset session
-        // Supabase redirects with hash fragments like #access_token=...&type=recovery
-        const urlHash = window.location.hash;
-        console.log('Full URL hash:', urlHash);
-        console.log('Contains type=recovery?', urlHash.includes('type=recovery'));
-        console.log('Current showPasswordReset state:', showPasswordReset);
-        
-        if (urlHash.includes('type=recovery')) {
-          console.log('Password reset detected! Setting showPasswordReset to true');
-          setShowPasswordReset(true);
-        }
-      }
-    };
-    
-    checkAuth();
-
-    // Listen for auth state changes
-    const { data: { subscription } } = authService.onAuthStateChange((user) => {
-      setUser(user);
-      setIsLoggedIn(!!user);
-      
-      // Check for password reset on auth state change too
-      if (user) {
-        const urlHash = window.location.hash;
-        console.log('Auth change - Full URL hash:', urlHash);
-        console.log('Auth change - Contains type=recovery?', urlHash.includes('type=recovery'));
-        
-        if (urlHash.includes('type=recovery')) {
-          console.log('Password reset detected on auth change! Setting showPasswordReset to true');
-          setShowPasswordReset(true);
-        }
+        setUser(session.user);
       }
     });
 
-    return () => subscription.unsubscribe();
+    // Listen for all auth state changes
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log('Supabase auth event:', event); // Helpful for debugging
+
+        if (event === 'PASSWORD_RECOVERY') {
+          // This event fires when the user clicks the password reset link
+          setShowPasswordReset(true);
+          setIsLoggedIn(true);
+          setUser(session?.user ?? null);
+        } else if (event === 'SIGNED_IN') {
+          // This handles regular logins
+          setShowPasswordReset(false);
+          setIsLoggedIn(true);
+          setUser(session?.user ?? null);
+        } else if (event === 'SIGNED_OUT') {
+          // This handles logouts
+          setShowPasswordReset(false);
+          setIsLoggedIn(false);
+          setUser(null);
+        }
+      }
+    );
+
+    // Cleanup the listener when the component unmounts
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
   const handleLogin = async (email: string, password: string) => {
@@ -85,8 +80,7 @@ const App: React.FC = () => {
 
   const handlePasswordUpdated = () => {
     setShowPasswordReset(false);
-    // Clear URL parameters
-    window.history.replaceState({}, document.title, window.location.pathname);
+    // User is already on the dashboard due to the rendering logic
   };
   
   const handleLogout = async () => {
