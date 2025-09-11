@@ -15,6 +15,12 @@ interface UserProfile {
 
 class AuthService {
   async signup(email: string, password: string, name: string): Promise<User> {
+    // Check if Supabase is properly configured
+    const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL;
+    if (!supabaseUrl || supabaseUrl === 'https://placeholder.supabase.co') {
+      throw new Error('Supabase not configured. Please add environment variables.');
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
