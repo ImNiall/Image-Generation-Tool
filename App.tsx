@@ -18,13 +18,12 @@ const App: React.FC = () => {
         setIsLoggedIn(true);
         
         // Check if this is a password reset session
-        const urlParams = new URLSearchParams(window.location.search);
-        const urlHash = new URLSearchParams(window.location.hash.substring(1));
+        // Supabase redirects with hash fragments like #access_token=...&type=recovery
+        const urlHash = window.location.hash;
+        console.log('Full URL hash:', urlHash);
         
-        console.log('URL Search params:', Object.fromEntries(urlParams));
-        console.log('URL Hash params:', Object.fromEntries(urlHash));
-        
-        if (urlParams.get('type') === 'recovery' || urlHash.get('type') === 'recovery') {
+        if (urlHash.includes('type=recovery') || urlHash.includes('recovery')) {
+          console.log('Password reset detected!');
           setShowPasswordReset(true);
         }
       }
@@ -39,13 +38,11 @@ const App: React.FC = () => {
       
       // Check for password reset on auth state change too
       if (user) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const urlHash = new URLSearchParams(window.location.hash.substring(1));
+        const urlHash = window.location.hash;
+        console.log('Auth change - Full URL hash:', urlHash);
         
-        console.log('Auth change - URL Search params:', Object.fromEntries(urlParams));
-        console.log('Auth change - URL Hash params:', Object.fromEntries(urlHash));
-        
-        if (urlParams.get('type') === 'recovery' || urlHash.get('type') === 'recovery') {
+        if (urlHash.includes('type=recovery') || urlHash.includes('recovery')) {
+          console.log('Password reset detected on auth change!');
           setShowPasswordReset(true);
         }
       }
