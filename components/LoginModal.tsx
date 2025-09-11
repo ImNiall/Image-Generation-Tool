@@ -5,13 +5,15 @@ interface LoginModalProps {
   onClose: () => void;
   onLogin: (email: string, password: string) => void;
   onSwitchToSignup: () => void;
+  onForgotPassword: () => void;
 }
 
 export const LoginModal: React.FC<LoginModalProps> = ({ 
   isOpen, 
   onClose, 
   onLogin, 
-  onSwitchToSignup 
+  onSwitchToSignup,
+  onForgotPassword 
 }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -99,6 +101,16 @@ export const LoginModal: React.FC<LoginModalProps> = ({
             {isLoading ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
+
+        <div className="mt-4 text-center">
+          <button
+            type="button"
+            onClick={onForgotPassword}
+            className="text-brand-blue hover:text-brand-blue-dark text-sm font-medium"
+          >
+            Forgot your password?
+          </button>
+        </div>
 
         <div className="mt-6 text-center">
           <p className="text-brand-gray-600">

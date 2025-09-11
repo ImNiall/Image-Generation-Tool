@@ -40,11 +40,20 @@ const App: React.FC = () => {
 
   const handleSignup = async (email: string, password: string, name: string) => {
     try {
-      const user = await authService.signup(email, password, name);
-      setUser(user);
-      setIsLoggedIn(true);
+      await authService.signup(email, password, name);
+      // User will be automatically logged in after signup
     } catch (error) {
-      throw error; // Let the modal handle the error
+      console.error('Signup failed:', error);
+      // Handle signup error (show error message to user)
+    }
+  };
+
+  const handleResetPassword = async (email: string) => {
+    try {
+      await authService.resetPassword(email);
+    } catch (error) {
+      console.error('Password reset failed:', error);
+      throw error; // Re-throw to let the modal handle the error
     }
   };
   
@@ -58,11 +67,15 @@ const App: React.FC = () => {
     }
   };
 
-  if (isLoggedIn) {
-    return <Dashboard onLogout={handleLogout} />;
-  }
-
-  return <LandingPage onLogin={handleLogin} onSignup={handleSignup} />;
+  return (
+    <div className="App">
+      {isLoggedIn ? (
+        <Dashboard user={user} onLogout={handleLogout} />
+      ) : (
+        <LandingPage onLogin={handleLogin} onSignup={handleSignup} onResetPassword={handleResetPassword} />
+      )}
+    </div>
+  );
 };
 
 export default App;

@@ -91,6 +91,17 @@ class AuthService {
     const { data: { user } } = await supabase.auth.getUser();
     return !!user;
   }
+
+  // Reset password via email
+  async resetPassword(email: string): Promise<void> {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+  }
 }
 
 export const authService = new AuthService();

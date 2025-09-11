@@ -2,15 +2,18 @@ import React, { useState } from 'react';
 import { CarIcon } from './icons';
 import { LoginModal } from './LoginModal';
 import { SignupModal } from './SignupModal';
+import { ForgotPasswordModal } from './ForgotPasswordModal';
 
 interface HeaderProps {
     onLogin: (email: string, password: string) => void;
     onSignup: (email: string, password: string, name: string) => void;
+    onResetPassword: (email: string) => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onLogin, onSignup }) => {
+export const Header: React.FC<HeaderProps> = ({ onLogin, onSignup, onResetPassword }) => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
   return (
     <header className="bg-white shadow-md sticky top-0 z-10">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -43,6 +46,10 @@ export const Header: React.FC<HeaderProps> = ({ onLogin, onSignup }) => {
           setShowLoginModal(false);
           setShowSignupModal(true);
         }}
+        onForgotPassword={() => {
+          setShowLoginModal(false);
+          setShowForgotPasswordModal(true);
+        }}
       />
       
       <SignupModal
@@ -53,6 +60,12 @@ export const Header: React.FC<HeaderProps> = ({ onLogin, onSignup }) => {
           setShowSignupModal(false);
           setShowLoginModal(true);
         }}
+      />
+      
+      <ForgotPasswordModal
+        isOpen={showForgotPasswordModal}
+        onClose={() => setShowForgotPasswordModal(false)}
+        onResetPassword={onResetPassword}
       />
     </header>
   );
