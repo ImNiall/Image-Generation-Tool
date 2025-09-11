@@ -95,7 +95,7 @@ class AuthService {
   // Reset password via email
   async resetPassword(email: string): Promise<void> {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`
+      redirectTo: `https://theinstructorshub.co.uk`
     });
 
     if (error) {
