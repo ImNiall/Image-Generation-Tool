@@ -21,9 +21,11 @@ const App: React.FC = () => {
         // Supabase redirects with hash fragments like #access_token=...&type=recovery
         const urlHash = window.location.hash;
         console.log('Full URL hash:', urlHash);
+        console.log('Contains type=recovery?', urlHash.includes('type=recovery'));
+        console.log('Current showPasswordReset state:', showPasswordReset);
         
-        if (urlHash.includes('type=recovery') || urlHash.includes('recovery')) {
-          console.log('Password reset detected!');
+        if (urlHash.includes('type=recovery')) {
+          console.log('Password reset detected! Setting showPasswordReset to true');
           setShowPasswordReset(true);
         }
       }
@@ -40,9 +42,10 @@ const App: React.FC = () => {
       if (user) {
         const urlHash = window.location.hash;
         console.log('Auth change - Full URL hash:', urlHash);
+        console.log('Auth change - Contains type=recovery?', urlHash.includes('type=recovery'));
         
-        if (urlHash.includes('type=recovery') || urlHash.includes('recovery')) {
-          console.log('Password reset detected on auth change!');
+        if (urlHash.includes('type=recovery')) {
+          console.log('Password reset detected on auth change! Setting showPasswordReset to true');
           setShowPasswordReset(true);
         }
       }
