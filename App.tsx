@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import LandingPage from './LandingPage';
 import Dashboard from './Dashboard';
+import LandingPage from './LandingPage';
+import { PasswordResetPage } from './components/PasswordResetPage';
 import { authService, User } from './services/authService';
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
 
   useEffect(() => {
     // Check if user is already logged in on app load
@@ -14,6 +16,12 @@ const App: React.FC = () => {
       if (authState.isAuthenticated) {
         setUser(authState.user);
         setIsLoggedIn(true);
+        
+        // Check if this is a password reset session
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('type') === 'recovery') {
+          setShowPasswordReset(true);
+        }
       }
     };
     
@@ -23,6 +31,14 @@ const App: React.FC = () => {
     const { data: { subscription } } = authService.onAuthStateChange((user) => {
       setUser(user);
       setIsLoggedIn(!!user);
+      
+      // Check for password reset on auth state change too
+      if (user) {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('type') === 'recovery') {
+          setShowPasswordReset(true);
+        }
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -56,12 +72,19 @@ const App: React.FC = () => {
       throw error; // Re-throw to let the modal handle the error
     }
   };
+
+  const handlePasswordUpdated = () => {
+    setShowPasswordReset(false);
+    // Clear URL parameters
+    window.history.replaceState({}, document.title, window.location.pathname);
+  };
   
   const handleLogout = async () => {
     try {
       await authService.logout();
       setUser(null);
       setIsLoggedIn(false);
+      setShowPasswordReset(false);
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -70,7 +93,11 @@ const App: React.FC = () => {
   return (
     <div className="App">
       {isLoggedIn ? (
-        <Dashboard user={user} onLogout={handleLogout} />
+        showPasswordReset ? (
+          <PasswordResetPage onPasswordUpdated={handlePasswordUpdated} />
+        ) : (
+          <Dashboard user={user} onLogout={handleLogout} />
+        )
       ) : (
         <LandingPage onLogin={handleLogin} onSignup={handleSignup} onResetPassword={handleResetPassword} />
       )}
