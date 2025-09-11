@@ -10,6 +10,7 @@ interface DiagramDisplayProps {
   progressMessage: string;
   showImageSizeWarning: boolean;
   onSave?: (diagram: DiagramResult) => void;
+  onGuestSaveAttempt?: () => void;
   isSaved?: boolean;
   onExpand?: (imageUrl: string) => void;
 }
@@ -20,18 +21,19 @@ interface ImageCardProps {
     diagram?: DiagramResult;
     onDownload?: (imageUrl: string) => void;
     onSave?: (diagram: DiagramResult) => void;
+    onGuestSaveAttempt?: () => void;
     onDelete?: (id: string) => void;
     onExpand?: (imageUrl: string) => void;
     isSaved?: boolean;
     children?: React.ReactNode;
 }
 
-export const ImageCard: React.FC<ImageCardProps> = ({ title, imageUrl, diagram, onDownload, onSave, onDelete, onExpand, isSaved, children }) => (
+export const ImageCard: React.FC<ImageCardProps> = ({ title, imageUrl, diagram, onDownload, onSave, onGuestSaveAttempt, onDelete, onExpand, isSaved, children }) => (
   <div className="w-full flex flex-col">
     <h3 className="text-lg font-semibold text-center mb-3 text-brand-gray-700">{title}</h3>
     <div className="relative aspect-[4/3] w-full bg-brand-gray-200 rounded-lg overflow-hidden shadow-sm group">
       <img src={imageUrl} alt={title} className="w-full h-full object-contain" />
-      <div className="absolute top-3 right-3 flex items-center gap-2 transition-opacity opacity-0 group-hover:opacity-100 focus-within:opacity-100">
+      <div className="absolute top-3 right-3 flex items-center gap-2">
         {onExpand && (
             <button
             onClick={() => onExpand(imageUrl)}
@@ -48,6 +50,16 @@ export const ImageCard: React.FC<ImageCardProps> = ({ title, imageUrl, diagram, 
             className="bg-brand-gray-900 bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue"
             aria-label="Save diagram"
             title="Save to library"
+            >
+            <SaveIcon className="w-5 h-5" />
+            </button>
+        )}
+        {onGuestSaveAttempt && diagram && (
+            <button
+            onClick={onGuestSaveAttempt}
+            className="bg-brand-gray-900 bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue"
+            aria-label="Save diagram"
+            title="Sign up to save to library"
             >
             <SaveIcon className="w-5 h-5" />
             </button>
@@ -98,7 +110,7 @@ const LoadingCard: React.FC<{ title: string, message: string }> = ({ title, mess
 );
 
 
-export const DiagramDisplay: React.FC<DiagramDisplayProps> = ({ originalImage, generatedDiagram, isLoading, error, progressMessage, showImageSizeWarning, onSave, isSaved, onExpand }) => {
+export const DiagramDisplay: React.FC<DiagramDisplayProps> = ({ originalImage, generatedDiagram, isLoading, error, progressMessage, showImageSizeWarning, onSave, onGuestSaveAttempt, isSaved, onExpand }) => {
   if (!originalImage) return null;
 
   const handleDownload = (imageUrl: string) => {
@@ -134,13 +146,14 @@ export const DiagramDisplay: React.FC<DiagramDisplayProps> = ({ originalImage, g
         {isLoading && <LoadingCard title="After" message={progressMessage} />}
 
         {!isLoading && generatedDiagram && (
-            <div className="flex flex-col">
+            <div className="flex flex-col animate-fade-in">
                 <ImageCard 
                     title="After" 
                     imageUrl={generatedDiagram.imageUrl}
                     diagram={generatedDiagram}
                     onDownload={handleDownload}
                     onSave={onSave}
+                    onGuestSaveAttempt={onGuestSaveAttempt}
                     isSaved={isSaved}
                     onExpand={onExpand}
                 />

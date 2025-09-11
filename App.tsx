@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import Dashboard from './Dashboard';
 import LandingPage from './LandingPage';
 import { PasswordResetPage } from './components/PasswordResetPage';
-import { authService, User } from './services/authService';
 import { supabase } from './lib/supabase';
+import type { User } from './lib/supabase';
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showPasswordReset, setShowPasswordReset] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Check for an existing session on initial load
@@ -17,25 +18,23 @@ const App: React.FC = () => {
         setIsLoggedIn(true);
         setUser(session.user);
       }
+      setLoading(false);
     });
 
     // Listen for all auth state changes
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log('Supabase auth event:', event); // Helpful for debugging
+        console.log('Supabase auth event:', event);
 
         if (event === 'PASSWORD_RECOVERY') {
-          // This event fires when the user clicks the password reset link
           setShowPasswordReset(true);
-          setIsLoggedIn(true);
+          setIsLoggedIn(true); // User is technically logged in to reset password
           setUser(session?.user ?? null);
         } else if (event === 'SIGNED_IN') {
-          // This handles regular logins
           setShowPasswordReset(false);
           setIsLoggedIn(true);
           setUser(session?.user ?? null);
         } else if (event === 'SIGNED_OUT') {
-          // This handles logouts
           setShowPasswordReset(false);
           setIsLoggedIn(false);
           setUser(null);
@@ -43,76 +42,61 @@ const App: React.FC = () => {
       }
     );
 
-    // Cleanup the listener when the component unmounts
     return () => {
       authListener.subscription.unsubscribe();
     };
   }, []);
 
+  // Direct Supabase calls (no wrapper service)
   const handleLogin = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
-
-    if (error) {
-      throw new Error(error.message);
-    }
-    // User state will be updated via onAuthStateChange listener
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw new Error(error.message);
   };
 
   const handleSignup = async (email: string, password: string, name: string) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: {
-          name: name
-        }
-      }
+      options: { data: { name } },
     });
-
-    if (error) {
-      throw new Error(error.message);
-    }
-    // User will be automatically logged in after signup via onAuthStateChange
+    if (error) throw new Error(error.message);
   };
 
   const handleResetPassword = async (email: string) => {
+    // The redirect URL should be your production URL where the app is hosted.
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `https://theinstructorshub.co.uk`
+      redirectTo: window.location.origin,
     });
-
-    if (error) {
-      throw new Error(error.message);
-    }
+    if (error) throw new Error(error.message);
   };
 
-  const handlePasswordUpdated = () => {
-    setShowPasswordReset(false);
-    // User is already on the dashboard due to the rendering logic
-  };
-  
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error('Logout error:', error);
-    }
-    // User state will be updated via onAuthStateChange listener
+    if (error) console.error('Logout error:', error);
+  };
+  
+  const handlePasswordUpdated = () => {
+    setShowPasswordReset(false);
+    // After password update, Supabase sends a SIGNED_IN event,
+    // so the listener will handle setting the correct state.
   };
 
+  if (loading) {
+    return <div className="h-screen w-screen flex items-center justify-center bg-brand-gray-100"><p>Loading...</p></div>;
+  }
+
   return (
-    <div className="App">
-      {isLoggedIn ? (
-        showPasswordReset ? (
-          <PasswordResetPage onPasswordUpdated={handlePasswordUpdated} />
+      <>
+        {isLoggedIn ? (
+          showPasswordReset ? (
+            <PasswordResetPage onPasswordUpdated={handlePasswordUpdated} />
+          ) : (
+            <Dashboard user={user} onLogout={handleLogout} />
+          )
         ) : (
-          <Dashboard user={user} onLogout={handleLogout} />
-        )
-      ) : (
-        <LandingPage onLogin={handleLogin} onSignup={handleSignup} onResetPassword={handleResetPassword} />
-      )}
-    </div>
+          <LandingPage onLogin={handleLogin} onSignup={handleSignup} onResetPassword={handleResetPassword} />
+        )}
+      </>
   );
 };
 

@@ -14,8 +14,8 @@ export const DashboardHome: React.FC<DashboardHomeProps> = ({ diagramCount, rece
   return (
     <div className="max-w-5xl mx-auto">
       <div className="mb-8">
-        <h2 className="text-3xl font-bold">Dashboard Overview</h2>
-        <p className="text-brand-gray-700 mt-1">Welcome back! Here's a summary of your activity.</p>
+        <h2 className="text-3xl font-bold">Welcome, Instructor</h2>
+        <p className="text-brand-gray-700 mt-1">Welcome back! Here’s a summary of your saved diagrams and account activity.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
@@ -33,8 +33,8 @@ export const DashboardHome: React.FC<DashboardHomeProps> = ({ diagramCount, rece
         {/* Create New Card */}
         <div className="md:col-span-2 bg-brand-blue text-white p-6 rounded-lg shadow-sm flex flex-col sm:flex-row justify-between items-center">
           <div>
-            <h3 className="text-xl font-bold">Ready to create?</h3>
-            <p className="opacity-90 mt-1">Start by uploading a new image to the generator.</p>
+            <h3 className="text-xl font-bold">Ready to create a new diagram?</h3>
+            <p className="opacity-90 mt-1">Turn a Google Earth screenshot into a teaching tool.</p>
           </div>
           <button
             onClick={onCreateNew}

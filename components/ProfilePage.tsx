@@ -34,8 +34,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-8">
-        <h2 className="text-3xl font-bold">Account Settings</h2>
-        <p className="text-brand-gray-700 mt-1">Manage your profile, subscription, and payment details.</p>
+        <h2 className="text-3xl font-bold">My Profile</h2>
+        <p className="text-brand-gray-700 mt-1">Manage your account details, subscription, and billing information.</p>
       </div>
       
       <div className="space-y-6">

@@ -1,20 +1,15 @@
 import React, { useState } from 'react';
+import { LoadingSpinner } from './icons';
 
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onLogin: (email: string, password: string) => void;
-  onSwitchToSignup: () => void;
+  onLogin: (email: string, password: string) => Promise<void>;
   onForgotPassword: () => void;
+  onSwitchToSignup: () => void;
 }
 
-export const LoginModal: React.FC<LoginModalProps> = ({ 
-  isOpen, 
-  onClose, 
-  onLogin, 
-  onSwitchToSignup,
-  onForgotPassword 
-}) => {
+export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, onForgotPassword, onSwitchToSignup }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -24,18 +19,11 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     e.preventDefault();
     setError('');
     setIsLoading(true);
-
-    if (!email || !password) {
-      setError('Please fill in all fields');
-      setIsLoading(false);
-      return;
-    }
-
     try {
       await onLogin(email, password);
-      onClose();
-    } catch (err) {
-      setError('Invalid email or password');
+      onClose(); 
+    } catch (err: any) {
+      setError(err.message || 'Failed to sign in. Please check your credentials.');
     } finally {
       setIsLoading(false);
     }
@@ -44,85 +32,47 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-brand-gray-900">Sign In</h2>
-          <button
-            onClick={onClose}
-            className="text-brand-gray-500 hover:text-brand-gray-700"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={onClose}>
+      <div className="bg-white rounded-lg shadow-xl p-8 max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
+        <h2 className="text-2xl font-bold text-center mb-2">Instructor Sign In</h2>
+        <p className="text-center text-brand-gray-500 mb-6">Welcome back!</p>
+        
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-brand-gray-700 mb-1">
-              Email
-            </label>
+            <label htmlFor="login-email" className="block text-sm font-medium text-brand-gray-700">Email</label>
             <input
+              id="login-email"
               type="email"
-              id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent"
-              placeholder="Enter your email"
+              className="mt-1 block w-full px-3 py-2 border border-brand-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue focus:border-brand-blue"
               required
             />
           </div>
-
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-brand-gray-700 mb-1">
-              Password
-            </label>
+            <label htmlFor="login-password" className="block text-sm font-medium text-brand-gray-700">Password</label>
             <input
+              id="login-password"
               type="password"
-              id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent"
-              placeholder="Enter your password"
+              className="mt-1 block w-full px-3 py-2 border border-brand-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue focus:border-brand-blue"
               required
             />
           </div>
-
-          {error && (
-            <div className="text-red-600 text-sm">{error}</div>
-          )}
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-brand-blue text-white font-semibold py-2 px-4 rounded-lg hover:bg-brand-blue-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? 'Signing In...' : 'Sign In'}
+          <div className="text-right">
+            <button type="button" onClick={onForgotPassword} className="text-sm text-brand-blue hover:underline">Forgot Password?</button>
+          </div>
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+          <button type="submit" disabled={isLoading} className="w-full bg-brand-blue text-white py-2.5 rounded-lg font-semibold hover:bg-brand-blue-dark disabled:bg-brand-gray-300 flex items-center justify-center">
+            {isLoading ? <LoadingSpinner className="w-5 h-5" /> : 'Sign In'}
           </button>
         </form>
 
-        <div className="mt-4 text-center">
-          <button
-            type="button"
-            onClick={onForgotPassword}
-            className="text-brand-blue hover:text-brand-blue-dark text-sm font-medium"
-          >
-            Forgot your password?
-          </button>
-        </div>
-
-        <div className="mt-6 text-center">
-          <p className="text-brand-gray-600">
-            Don't have an account?{' '}
-            <button
-              onClick={onSwitchToSignup}
-              className="text-brand-blue hover:text-brand-blue-dark font-medium"
-            >
-              Sign up
-            </button>
-          </p>
-        </div>
+        <p className="text-center text-sm text-brand-gray-500 mt-6">
+          Don't have an account?{' '}
+          <button onClick={onSwitchToSignup} className="font-semibold text-brand-blue hover:underline">Sign up</button>
+        </p>
       </div>
     </div>
   );

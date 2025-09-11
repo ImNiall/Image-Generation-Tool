@@ -1,10 +1,9 @@
 import React from 'react';
 import type { View } from '../Dashboard';
-import type { User } from '../types';
 import { CarIcon, HomeIcon, SparklesIcon, EditIcon, LibraryIcon, UserCircleIcon, LogoutIcon } from './icons';
 
 interface DashboardSidebarProps {
-  user: User;
+  user: { name: string; email: string };
   activeView: View;
   onViewChange: (view: View) => void;
   onLogout: () => void;
@@ -35,7 +34,7 @@ const NavLink: React.FC<NavLinkProps> = ({ icon, label, isActive, onClick }) => 
 
 export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ user, activeView, onViewChange, onLogout }) => {
   return (
-    <aside className="w-64 bg-white border-r border-brand-gray-200 flex flex-col shrink-0">
+    <aside className="w-64 bg-white border-r border-brand-gray-200 flex-col shrink-0 hidden md:flex">
       {/* Logo */}
       <div className="px-6 py-5 border-b border-brand-gray-200">
         <div className="flex items-center gap-3">
@@ -69,7 +68,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ user, active
           />
           <NavLink
             icon={<LibraryIcon className="w-5 h-5" />}
-            label="My Library"
+            label="Diagram Library"
             isActive={activeView === 'library'}
             onClick={() => onViewChange('library')}
           />

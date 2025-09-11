@@ -31,9 +31,9 @@ export const BeforeAfterShowcase: React.FC = () => {
   return (
     <div className="mt-12">
       <div className="text-center max-w-2xl mx-auto">
-        <h2 className="text-3xl font-bold">From Chaos to Clarity</h2>
+        <h2 className="text-3xl font-bold">Clarify the Most Challenging Junctions</h2>
         <p className="mt-4 text-lg text-brand-gray-700">
-          See how DriveDiagram effortlessly transforms real-world road complexity into simple, easy-to-understand diagrams.
+          Turn cluttered satellite views of busy intersections, tricky roundabouts, and confusing lane markings into easy-to-understand diagrams. Show your students exactly what to focus on.
         </p>
       </div>
 

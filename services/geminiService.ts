@@ -3,11 +3,13 @@ import { GoogleGenAI, Modality, Part } from "@google/genai";
 import { GEMINI_IMAGE_EDIT_MODEL, AI_PROMPT } from '../constants';
 import type { DiagramResult } from '../types';
 
-if (!process.env.API_KEY) {
-    console.warn("API_KEY environment variable not set. Using mock data.");
-}
+// Safely access env to avoid runtime errors if import.meta.env is undefined.
+const env = (import.meta as any)?.env;
+const apiKey = env?.VITE_API_KEY;
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || 'mock-key' });
+if (!apiKey) {
+    console.warn("VITE_API_KEY environment variable not set. Using mock data for image generation.");
+}
 
 const fileToGenerativePart = (base64Data: string, mimeType: string): Part => {
   return {
@@ -19,19 +21,20 @@ const fileToGenerativePart = (base64Data: string, mimeType: string): Part => {
 };
 
 export const transformImageToDiagram = async (base64ImageData: string, mimeType: string): Promise<Pick<DiagramResult, 'imageUrl' | 'explanation'>> => {
-  // MOCK BEHAVIOR FOR DEVELOPMENT if API_KEY is missing
-  if (!process.env.API_KEY) {
+  // Mock behavior if API key is missing
+  if (!apiKey) {
     return new Promise(resolve => {
       setTimeout(() => {
         resolve({
-          imageUrl: `https://picsum.photos/seed/${Date.now()}/800/600`,
-          explanation: "This is a mock diagram as the API key is not configured."
+          imageUrl: `https://storage.googleapis.com/aistudio-hosting/story-images/drive-diagram/after-1.webp`,
+          explanation: "This is a mock diagram. Please configure your VITE_API_KEY to use the live Gemini API."
         });
-      }, 3000);
+      }, 2000);
     });
   }
 
   try {
+    const ai = new GoogleGenAI({ apiKey });
     const imagePart = fileToGenerativePart(base64ImageData, mimeType);
     const textPart = { text: AI_PROMPT };
 
@@ -61,7 +64,7 @@ export const transformImageToDiagram = async (base64ImageData: string, mimeType:
     }
 
     if (!imageUrl) {
-      throw new Error("API did not return an image. The content may have been blocked.");
+      throw new Error("API did not return an image. The content may have been blocked or the response was empty.");
     }
     
     return { imageUrl, explanation };

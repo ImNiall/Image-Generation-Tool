@@ -45,9 +45,9 @@ export const LimitReachedModal: React.FC<LimitReachedModalProps> = ({ isOpen, on
         <div className="flex items-center justify-center h-16 w-16 rounded-full bg-brand-blue mx-auto mb-5">
             <SparklesIcon className="w-9 h-9 text-white" />
         </div>
-        <h2 id="limit-modal-title" className="text-2xl font-bold text-brand-gray-900">You've used your free diagrams</h2>
+        <h2 id="limit-modal-title" className="text-2xl font-bold text-brand-gray-900">Continue Creating Unlimited Diagrams</h2>
         <p className="text-brand-gray-700 mt-3 mb-6">
-            Sign up for a free account to continue creating, save your diagrams to your library, and get unlimited access.
+            To generate more diagrams, save your work to a personal library, and access all features, simply create a free instructor account.
         </p>
         <div className="flex flex-col gap-3">
              <button

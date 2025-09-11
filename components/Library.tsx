@@ -22,8 +22,8 @@ export const Library: React.FC<LibraryProps> = ({ diagrams, onDelete, onExpand }
   return (
     <div>
       <div className="max-w-5xl mx-auto">
-        <h2 className="text-3xl font-bold mb-2">My Library</h2>
-        <p className="text-brand-gray-700 mb-8">Here are your saved diagrams. You can download or delete them at any time.</p>
+        <h2 className="text-3xl font-bold mb-2">Your Diagram Library</h2>
+        <p className="text-brand-gray-700 mb-8">This is your personal collection of saved diagrams. Download, review, or delete them at any time to keep your teaching materials organized.</p>
         
         {diagrams.length === 0 ? (
           <div className="text-center py-16 border-2 border-dashed border-brand-gray-300 rounded-lg">

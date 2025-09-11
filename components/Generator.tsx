@@ -11,6 +11,7 @@ interface GeneratorProps {
   isGuestMode: boolean;
   onGenerationAttemptBlocked?: () => void;
   onSaveDiagram?: (diagram: DiagramResult) => void;
+  onGuestSaveAttempt?: () => void;
   isDiagramSaved?: (diagramId: string) => boolean;
   onExpand?: (imageUrl: string) => void;
 }
@@ -18,7 +19,8 @@ interface GeneratorProps {
 export const Generator: React.FC<GeneratorProps> = ({ 
     isGuestMode, 
     onGenerationAttemptBlocked, 
-    onSaveDiagram, 
+    onSaveDiagram,
+    onGuestSaveAttempt,
     isDiagramSaved,
     onExpand,
 }) => {
@@ -130,7 +132,8 @@ export const Generator: React.FC<GeneratorProps> = ({
           error={error} 
           progressMessage={progressMessage}
           showImageSizeWarning={showImageSizeWarning}
-          onSave={!isGuestMode ? onSaveDiagram : undefined}
+          onSave={onSaveDiagram}
+          onGuestSaveAttempt={onGuestSaveAttempt}
           isSaved={isCurrentDiagramSaved}
           onExpand={onExpand}
         />

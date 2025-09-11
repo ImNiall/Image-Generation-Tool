@@ -4,18 +4,20 @@ export interface DiagramResult {
   explanation?: string;
   originalImageUrl: string;
   createdAt: number;
+  // user_id is implicit via database query
 }
 
+// Fix: Added User interface for ProfilePage component.
 export interface User {
   name: string;
   email: string;
   subscription: {
-    plan: 'Free' | 'Pro';
-    status: 'Active' | 'Cancelled';
+    plan: string;
+    status: string;
     renewsOn: string;
   };
   paymentMethod: {
-    cardType: 'Visa' | 'Mastercard';
+    cardType: string;
     last4: string;
     expires: string;
   };

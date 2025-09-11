@@ -68,8 +68,8 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onLoginSuccess, onNaviga
             <span className="text-2xl font-bold">DriveDiagram</span>
         </button>
         <div className="relative z-10">
-            <h1 className="text-4xl font-bold leading-tight">Welcome Back to DriveDiagram</h1>
-            <p className="mt-4 text-lg text-brand-gray-300 max-w-md">Unlock the power of clear communication. Sign in to create, manage, and share your driving scenario diagrams.</p>
+            <h1 className="text-4xl font-bold leading-tight">Welcome Back, Instructor</h1>
+            <p className="mt-4 text-lg text-brand-gray-300 max-w-md">Sign in to access your diagram library and continue creating powerful, clear teaching aids for your students.</p>
         </div>
         <RoadIllustration />
         <div className="text-sm text-brand-gray-500 z-10">&copy; {new Date().getFullYear()} DriveDiagram</div>
@@ -82,8 +82,8 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onLoginSuccess, onNaviga
                 <ChevronLeftIcon className="w-5 h-5" />
                 Back to Home
             </button>
-          <h2 className="text-3xl font-bold text-brand-gray-900">Sign in to your account</h2>
-          <p className="text-brand-gray-700 mt-2">Enter your details below to proceed.</p>
+          <h2 className="text-3xl font-bold text-brand-gray-900">Instructor Sign In</h2>
+          <p className="text-brand-gray-700 mt-2">Welcome! Enter your details to access your dashboard.</p>
 
           <div className="mt-8 space-y-4">
             <button onClick={handleGoogleSignIn} disabled={isLoading} className="w-full inline-flex items-center justify-center gap-3 py-3 px-4 border border-brand-gray-300 rounded-lg text-brand-gray-700 font-semibold hover:bg-brand-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue disabled:opacity-50">
@@ -172,7 +172,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onLoginSuccess, onNaviga
           <p className="mt-8 text-center text-sm text-brand-gray-700">
               Don't have an account?{' '}
               <a href="#" onClick={(e) => e.preventDefault()} className="font-semibold text-brand-blue hover:text-brand-blue-dark">
-                Sign up for free
+                Sign up for a free instructor account
               </a>
           </p>
         </div>
