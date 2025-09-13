@@ -28,27 +28,25 @@ Create a diagram that would help someone understand the driving scenario and nav
 export default async function handler(event, context) {
   // Handle preflight OPTIONS request
   if (event.httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 200,
+    return new Response('', {
+      status: 200,
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
       },
-      body: '',
-    };
+    });
   }
 
   // Only allow POST requests
   if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405,
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ error: 'Method not allowed' }),
-    };
+    });
   }
 
   try {
@@ -67,40 +65,37 @@ export default async function handler(event, context) {
       }
     } catch (parseError) {
       console.error('JSON parse error:', parseError);
-      return {
-        statusCode: 400,
+      return new Response(JSON.stringify({ error: 'Invalid JSON in request body' }), {
+        status: 400,
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ error: 'Invalid JSON in request body' }),
-      };
+      });
     }
     
     const { imageData, mimeType } = body;
 
     if (!imageData || !mimeType) {
-      return {
-        statusCode: 400,
+      return new Response(JSON.stringify({ error: 'Missing imageData or mimeType' }), {
+        status: 400,
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ error: 'Missing imageData or mimeType' }),
-      };
+      });
     }
 
     // Get API key from environment (server-side only)
     const apiKey = process.env.VITE_API_KEY;
     if (!apiKey) {
-      return {
-        statusCode: 500,
+      return new Response(JSON.stringify({ error: 'Gemini API key not configured' }), {
+        status: 500,
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ error: 'Gemini API key not configured' }),
-      };
+      });
     }
 
     const ai = new GoogleGenAI({ apiKey });
@@ -140,38 +135,35 @@ export default async function handler(event, context) {
     }
 
     if (!imageUrl) {
-      return {
-        statusCode: 500,
+      return new Response(JSON.stringify({ 
+        error: "API did not return an image. The content may have been blocked or the response was empty." 
+      }), {
+        status: 500,
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          error: "API did not return an image. The content may have been blocked or the response was empty." 
-        }),
-      };
+      });
     }
     
-    return {
-      statusCode: 200,
+    return new Response(JSON.stringify({ imageUrl, explanation }), {
+      status: 200,
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ imageUrl, explanation }),
-    };
+    });
 
   } catch (error) {
     console.error("Error calling Gemini API:", error);
-    return {
-      statusCode: 500,
+    return new Response(JSON.stringify({ 
+      error: `Gemini API Error: ${error.message}` 
+    }), {
+      status: 500,
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ 
-        error: `Gemini API Error: ${error.message}` 
-      }),
-    };
+    });
   }
 }
