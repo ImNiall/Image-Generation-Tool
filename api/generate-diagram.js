@@ -25,7 +25,7 @@ Style requirements:
 
 Create a diagram that would help someone understand the driving scenario and navigation at this location.`;
 
-export default async function handler(event, context) {
+export const handler = async (event, context) => {
   // Debug logging for method detection
   console.log('Event object:', JSON.stringify(event, null, 2));
   console.log('HTTP Method from event:', event.httpMethod);
