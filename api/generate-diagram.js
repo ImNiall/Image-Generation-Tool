@@ -25,51 +25,82 @@ Style requirements:
 
 Create a diagram that would help someone understand the driving scenario and navigation at this location.`;
 
-export default async function handler(req, res) {
-  // Add CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
+export default async function handler(event, context) {
   // Handle preflight OPTIONS request
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
+      body: '',
+    };
   }
 
   // Only allow POST requests
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ error: 'Method not allowed' }),
+    };
   }
 
   try {
     // Debug logging
-    console.log('Request method:', req.method);
-    console.log('Request body type:', typeof req.body);
-    console.log('Request body:', req.body);
+    console.log('Request method:', event.httpMethod);
+    console.log('Request body type:', typeof event.body);
+    console.log('Request body:', event.body);
 
     // Parse JSON body for Netlify Functions
     let body;
     try {
-      if (typeof req.body === 'string') {
-        body = JSON.parse(req.body);
+      if (typeof event.body === 'string') {
+        body = JSON.parse(event.body);
       } else {
-        body = req.body;
+        body = event.body;
       }
     } catch (parseError) {
       console.error('JSON parse error:', parseError);
-      return res.status(400).json({ error: 'Invalid JSON in request body' });
+      return {
+        statusCode: 400,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ error: 'Invalid JSON in request body' }),
+      };
     }
     
     const { imageData, mimeType } = body;
 
     if (!imageData || !mimeType) {
-      return res.status(400).json({ error: 'Missing imageData or mimeType' });
+      return {
+        statusCode: 400,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ error: 'Missing imageData or mimeType' }),
+      };
     }
 
     // Get API key from environment (server-side only)
     const apiKey = process.env.VITE_API_KEY;
     if (!apiKey) {
-      return res.status(500).json({ error: 'Gemini API key not configured' });
+      return {
+        statusCode: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ error: 'Gemini API key not configured' }),
+      };
     }
 
     const ai = new GoogleGenAI({ apiKey });
@@ -109,17 +140,38 @@ export default async function handler(req, res) {
     }
 
     if (!imageUrl) {
-      return res.status(500).json({ 
-        error: "API did not return an image. The content may have been blocked or the response was empty." 
-      });
+      return {
+        statusCode: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          error: "API did not return an image. The content may have been blocked or the response was empty." 
+        }),
+      };
     }
     
-    return res.status(200).json({ imageUrl, explanation });
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ imageUrl, explanation }),
+    };
 
   } catch (error) {
     console.error("Error calling Gemini API:", error);
-    return res.status(500).json({ 
-      error: `Gemini API Error: ${error.message}` 
-    });
+    return {
+      statusCode: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        error: `Gemini API Error: ${error.message}` 
+      }),
+    };
   }
 }
