@@ -12,19 +12,20 @@ CREATE TABLE IF NOT EXISTS public.diagrams (
 -- Enable Row Level Security
 ALTER TABLE public.diagrams ENABLE ROW LEVEL SECURITY;
 
--- Create policy to allow users to see only their own diagrams
+-- Create policies (with IF NOT EXISTS equivalent using DROP IF EXISTS first)
+DROP POLICY IF EXISTS "Users can view own diagrams" ON public.diagrams;
 CREATE POLICY "Users can view own diagrams" ON public.diagrams
     FOR SELECT USING (auth.uid() = user_id);
 
--- Create policy to allow users to insert their own diagrams
+DROP POLICY IF EXISTS "Users can insert own diagrams" ON public.diagrams;
 CREATE POLICY "Users can insert own diagrams" ON public.diagrams
     FOR INSERT WITH CHECK (auth.uid() = user_id);
 
--- Create policy to allow users to update their own diagrams
+DROP POLICY IF EXISTS "Users can update own diagrams" ON public.diagrams;
 CREATE POLICY "Users can update own diagrams" ON public.diagrams
     FOR UPDATE USING (auth.uid() = user_id);
 
--- Create policy to allow users to delete their own diagrams
+DROP POLICY IF EXISTS "Users can delete own diagrams" ON public.diagrams;
 CREATE POLICY "Users can delete own diagrams" ON public.diagrams
     FOR DELETE USING (auth.uid() = user_id);
 
