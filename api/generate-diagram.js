@@ -26,6 +26,11 @@ Style requirements:
 Create a diagram that would help someone understand the driving scenario and navigation at this location.`;
 
 export default async function handler(event, context) {
+  // Debug logging for method detection
+  console.log('Event object:', JSON.stringify(event, null, 2));
+  console.log('HTTP Method from event:', event.httpMethod);
+  console.log('HTTP Method from headers:', event.headers);
+  
   // Handle preflight OPTIONS request
   if (event.httpMethod === 'OPTIONS') {
     return new Response('', {
@@ -40,6 +45,7 @@ export default async function handler(event, context) {
 
   // Only allow POST requests
   if (event.httpMethod !== 'POST') {
+    console.log('Method not allowed. Received:', event.httpMethod);
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
       status: 405,
       headers: {
