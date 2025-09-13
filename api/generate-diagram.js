@@ -27,7 +27,15 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { imageData, mimeType } = req.body;
+    // Parse JSON body for Netlify Functions
+    let body;
+    if (typeof req.body === 'string') {
+      body = JSON.parse(req.body);
+    } else {
+      body = req.body;
+    }
+    
+    const { imageData, mimeType } = body;
 
     if (!imageData || !mimeType) {
       return res.status(400).json({ error: 'Missing imageData or mimeType' });
