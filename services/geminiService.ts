@@ -1,77 +1,35 @@
 
-import { GoogleGenAI, Modality, Part } from "@google/genai";
-import { GEMINI_IMAGE_EDIT_MODEL, AI_PROMPT } from '../constants';
 import type { DiagramResult } from '../types';
 
-const apiKey = import.meta.env.VITE_API_KEY;
-
-if (!apiKey) {
-    console.warn("VITE_API_KEY environment variable not set. Using mock data for image generation.");
-}
-
-const fileToGenerativePart = (base64Data: string, mimeType: string): Part => {
-  return {
-    inlineData: {
-      data: base64Data,
-      mimeType,
-    },
-  };
-};
-
 export const transformImageToDiagram = async (base64ImageData: string, mimeType: string): Promise<Pick<DiagramResult, 'imageUrl' | 'explanation'>> => {
-  // Mock behavior if API key is missing
-  if (!apiKey) {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve({
-          imageUrl: `https://storage.googleapis.com/aistudio-hosting/story-images/drive-diagram/after-1.webp`,
-          explanation: "This is a mock diagram. Please configure your VITE_API_KEY to use the live Gemini API."
-        });
-      }, 2000);
-    });
-  }
-
   try {
-    const ai = new GoogleGenAI({ apiKey });
-    const imagePart = fileToGenerativePart(base64ImageData, mimeType);
-    const textPart = { text: AI_PROMPT };
-
-    const response = await ai.models.generateContent({
-      model: GEMINI_IMAGE_EDIT_MODEL,
-      contents: {
-        parts: [imagePart, textPart],
+    const response = await fetch('/api/generate-diagram', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-      config: {
-        responseModalities: [Modality.IMAGE, Modality.TEXT],
-      },
+      body: JSON.stringify({
+        imageData: base64ImageData,
+        mimeType: mimeType,
+      }),
     });
 
-    let imageUrl: string | null = null;
-    let explanation: string | undefined;
-
-    if (response.candidates && response.candidates.length > 0) {
-      for (const part of response.candidates[0].content.parts) {
-        if (part.inlineData) {
-          const base64Bytes = part.inlineData.data;
-          const imageMimeType = part.inlineData.mimeType;
-          imageUrl = `data:${imageMimeType};base64,${base64Bytes}`;
-        } else if (part.text) {
-          explanation = part.text.trim();
-        }
-      }
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
     }
 
-    if (!imageUrl) {
-      throw new Error("API did not return an image. The content may have been blocked or the response was empty.");
-    }
-    
-    return { imageUrl, explanation };
+    const result = await response.json();
+    return {
+      imageUrl: result.imageUrl,
+      explanation: result.explanation,
+    };
 
   } catch (error) {
-    console.error("Error calling Gemini API:", error);
+    console.error("Error calling backend API:", error);
     if (error instanceof Error) {
-        throw new Error(`Gemini API Error: ${error.message}`);
+      throw new Error(`Backend API Error: ${error.message}`);
     }
-    throw new Error("An unknown error occurred while communicating with the Gemini API.");
+    throw new Error("An unknown error occurred while communicating with the backend API.");
   }
 };

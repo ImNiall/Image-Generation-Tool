@@ -2,5 +2,9 @@
   command = "npm run build"
   publish = "dist"
 
+[functions]
+  directory = "api"
+
 [build.environment]
-  SECRETS_SCAN_SMART_DETECTION_OMIT_VALUES = "AIza*"
+  # No longer need to omit API keys since they're now server-side only
+  NODE_VERSION = "18"
