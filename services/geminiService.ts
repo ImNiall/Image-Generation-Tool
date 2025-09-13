@@ -3,9 +3,7 @@ import { GoogleGenAI, Modality, Part } from "@google/genai";
 import { GEMINI_IMAGE_EDIT_MODEL, AI_PROMPT } from '../constants';
 import type { DiagramResult } from '../types';
 
-// Safely access env to avoid runtime errors if import.meta.env is undefined.
-const env = (import.meta as any)?.env;
-const apiKey = env?.VITE_API_KEY;
+const apiKey = import.meta.env.VITE_API_KEY;
 
 if (!apiKey) {
     console.warn("VITE_API_KEY environment variable not set. Using mock data for image generation.");
