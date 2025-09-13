@@ -4,7 +4,14 @@
 
 [functions]
   directory = "api"
+  node_bundler = "esbuild"
 
 [build.environment]
   # No longer need to omit API keys since they're now server-side only
   NODE_VERSION = "18"
+
+# Redirect API calls to Netlify Functions
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
