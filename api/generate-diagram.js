@@ -1,5 +1,10 @@
 import { GoogleGenAI, Modality } from "@google/genai";
 
+// Netlify function configuration
+export const config = {
+  maxDuration: 30 // 30 seconds timeout
+};
+
 const GEMINI_IMAGE_EDIT_MODEL = "gemini-2.0-flash-exp";
 const AI_PROMPT = `You are an expert at creating clear, professional driving scenario diagrams. 
 
