@@ -1,4 +1,4 @@
-import { GoogleGenAI, Modality } from "@google/genai";
+import { VertexAI } from "@google-cloud/vertexai";
 
 // Netlify function configuration
 export const config = {
@@ -126,39 +126,70 @@ export const handler = async (event, context) => {
       };
     }
 
-    // Get API key from environment (server-side only)
-    const apiKey = process.env.VITE_API_KEY;
-    if (!apiKey) {
+    // Service account authentication (server-side only)
+    const serviceAccountJson = process.env.VERTEX_SERVICE_ACCOUNT_KEY;
+    const projectId = process.env.VERTEX_PROJECT_ID;
+    const location = process.env.VERTEX_LOCATION || 'us-central1'; // gemini-2.5-flash-image-preview availability
+
+    if (!serviceAccountJson) {
       return {
         statusCode: 500,
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ error: 'Gemini API key not configured' }),
+        body: JSON.stringify({ error: 'Missing VERTEX_SERVICE_ACCOUNT_KEY environment variable' }),
       };
     }
 
-    const ai = new GoogleGenAI({ apiKey });
-    
-    const imagePart = {
-      inlineData: {
-        data: imageData,
-        mimeType,
-      },
-    };
-    
-    const textPart = { text: AI_PROMPT };
+    let credentials;
+    try {
+      credentials = JSON.parse(serviceAccountJson);
+    } catch (e) {
+      console.error('Failed to parse VERTEX_SERVICE_ACCOUNT_KEY JSON:', e);
+      return {
+        statusCode: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ error: 'Invalid VERTEX_SERVICE_ACCOUNT_KEY JSON' }),
+      };
+    }
 
-    const response = await ai.models.generateContent({
-      model: GEMINI_IMAGE_EDIT_MODEL,
-      contents: {
-        parts: [imagePart, textPart],
-      },
-      config: {
-        responseModalities: [Modality.IMAGE, Modality.TEXT],
+    const resolvedProjectId = projectId || credentials.project_id;
+    if (!resolvedProjectId) {
+      return {
+        statusCode: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ error: 'Missing VERTEX_PROJECT_ID and project_id not found in service account JSON' }),
+      };
+    }
+
+    const vertex = new VertexAI({
+      project: resolvedProjectId,
+      location,
+      googleAuthOptions: {
+        credentials,
       },
     });
+    
+    const generativeModel = vertex.getGenerativeModel({ model: GEMINI_IMAGE_EDIT_MODEL });
+
+    const contents = [
+      {
+        role: 'user',
+        parts: [
+          { inlineData: { data: imageData, mimeType } },
+          { text: AI_PROMPT },
+        ],
+      },
+    ];
+
+    const response = await generativeModel.generateContent({ contents });
 
     let imageUrl = null;
     let explanation = undefined;
