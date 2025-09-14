@@ -129,7 +129,9 @@ export const handler = async (event, context) => {
     // Service account authentication (server-side only)
     const serviceAccountJson = process.env.VERTEX_SERVICE_ACCOUNT_KEY;
     const projectId = process.env.VERTEX_PROJECT_ID;
-    const location = process.env.VERTEX_LOCATION || 'us-central1'; // gemini-2.5-flash-image-preview availability
+    const rawLocation = process.env.VERTEX_LOCATION || 'us-central1';
+    // Normalize "global" (per some docs/forums) to the actual supported region for this model
+    const location = (rawLocation && rawLocation.toLowerCase() === 'global') ? 'us-central1' : rawLocation; // gemini-2.5-flash-image-preview availability
 
     if (!serviceAccountJson) {
       return {
