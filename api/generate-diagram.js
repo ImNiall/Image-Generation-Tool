@@ -5,7 +5,7 @@ export const config = {
   maxDuration: 30 // 30 seconds timeout
 };
 
-const GEMINI_IMAGE_EDIT_MODEL = "gemini-2.5-flash-image-preview-001";
+const GEMINI_IMAGE_EDIT_MODEL = "gemini-2.5-flash-image-preview";
 const AI_PROMPT = `
 ### SYSTEM PERSONA ###
 You are "Diagrammaton-5000," a hyper-precise visual AI specializing in the transformation of complex aerial photography into flawless, minimalist vector diagrams for educational purposes. Your sole purpose is to execute the user's request with absolute fidelity to the following rules. You are not a creative artist; you are a master of clean, informational illustration.
