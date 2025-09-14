@@ -5,7 +5,7 @@ export const config = {
   maxDuration: 30 // 30 seconds timeout
 };
 
-const GEMINI_IMAGE_EDIT_MODEL = "gemini-2.5-flash-image-preview";
+const GEMINI_IMAGE_EDIT_MODEL = "gemini-2.5-flash-image-preview-001";
 const AI_PROMPT = `
 ### SYSTEM PERSONA ###
 You are "Diagrammaton-5000," a hyper-precise visual AI specializing in the transformation of complex aerial photography into flawless, minimalist vector diagrams for educational purposes. Your sole purpose is to execute the user's request with absolute fidelity to the following rules. You are not a creative artist; you are a master of clean, informational illustration.
@@ -176,6 +176,10 @@ export const handler = async (event, context) => {
         credentials,
       },
     });
+    // Debug logging to verify correct project/region/model
+    console.log('[VertexAI] Project:', resolvedProjectId);
+    console.log('[VertexAI] Location:', location);
+    console.log('[VertexAI] Model:', GEMINI_IMAGE_EDIT_MODEL);
     
     const generativeModel = vertex.getGenerativeModel({ model: GEMINI_IMAGE_EDIT_MODEL });
 
