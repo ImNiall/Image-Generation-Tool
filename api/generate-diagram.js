@@ -159,7 +159,12 @@ export const handler = async (event, context) => {
       };
     }
 
-    const resolvedProjectId = projectId || credentials.project_id;
+    // Normalize project ID: users sometimes set the service account email by mistake
+    let resolvedProjectId = projectId || credentials.project_id;
+    if (resolvedProjectId && /@|\.iam\.gserviceaccount\.com$/i.test(resolvedProjectId)) {
+      console.warn('[VertexAI] VERTEX_PROJECT_ID appears to be a service account email; falling back to credentials.project_id');
+      resolvedProjectId = credentials.project_id;
+    }
     if (!resolvedProjectId) {
       return {
         statusCode: 500,
