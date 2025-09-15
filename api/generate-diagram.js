@@ -129,7 +129,7 @@ export const handler = async (event, context) => {
 // Service account authentication (server-side only)
     const serviceAccountJson = process.env.VERTEX_SERVICE_ACCOUNT_KEY;
     const projectId = process.env.VERTEX_PROJECT_ID;
-    const location = process.env.VERTEX_LOCATION || 'us-central1';
+    const location = process.env.VERTEX_LOCATION;
 
     if (!serviceAccountJson) {
       return {
@@ -139,6 +139,17 @@ export const handler = async (event, context) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ error: 'Missing VERTEX_SERVICE_ACCOUNT_KEY environment variable' }),
+      };
+    }
+
+    if (!location) {
+      return {
+        statusCode: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ error: 'Missing VERTEX_LOCATION environment variable' }),
       };
     }
 
