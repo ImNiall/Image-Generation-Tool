@@ -17,5 +17,7 @@ steps:
   - name: 'gcr.io/cloud-builders/gsutil'
     args: ['-m', 'rsync', '-r', 'dist', 'gs://theinstructorshub.co.uk']
 
+logsBucket: 'gs://theinstructorshub.co.uk/build_logs'
+
 options:
   logging: CLOUD_LOGGING_ONLY
