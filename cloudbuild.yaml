@@ -16,3 +16,6 @@ steps:
   # Sync the built assets to your GCS bucket used for website hosting
   - name: 'gcr.io/cloud-builders/gsutil'
     args: ['-m', 'rsync', '-r', 'dist', 'gs://theinstructorshub.co.uk']
+
+options:
+  logging: CLOUD_LOGGING_ONLY
