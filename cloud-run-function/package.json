@@ -1,0 +1,14 @@
+{
+  "name": "vertex-generate-diagram",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true,
+  "type": "commonjs",
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.4.0",
+    "@google-cloud/vertexai": "^1.4.0"
+  },
+  "scripts": {
+    "start": "functions-framework --target=handler"
+  }
+}
