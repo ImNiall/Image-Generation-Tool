@@ -1,0 +1,23 @@
+# Cloud Build: build and deploy the Cloud Run function from source
+# Directory context: this file lives in cloud-run-function/
+
+steps:
+  # Deploy to Cloud Run from source using Buildpacks
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    id: deploy-cloud-run
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        echo "Deploying generate-diagram from source (Buildpacks)..."
+        gcloud run deploy generate-diagram \
+          --region us-central1 \
+          --source . \
+          --allow-unauthenticated \
+          --set-env-vars VERTEX_PROJECT_ID=theinstructorshub-472219,VERTEX_LOCATION=us-central1,VERTEX_MODEL=gemini-2.5-flash-image-preview \
+          --set-secrets GEMINI_API_KEY=GEMINI_KEY_API:latest
+    dir: .
+
+options:
+  logging: CLOUD_LOGGING_ONLY
