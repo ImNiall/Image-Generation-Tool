@@ -14,6 +14,8 @@ steps:
         gcloud run deploy generate-diagram \
           --region us-central1 \
           --source . \
+          --entry-point handler \
+          --revision-timeout 300 \
           --allow-unauthenticated \
           --set-env-vars VERTEX_PROJECT_ID=theinstructorshub-472219,VERTEX_LOCATION=us-central1,VERTEX_MODEL=gemini-2.5-flash-image-preview \
           --set-secrets GEMINI_API_KEY=GEMINI_KEY_API:latest
