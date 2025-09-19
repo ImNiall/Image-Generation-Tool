@@ -2,9 +2,9 @@
 import type { DiagramResult } from '../types';
 
 // Read API URL from a public build-time env so environments can be switched
-// without code changes. Fall back to the known Cloud Run URL for safety.
+// without code changes. Fall back to the live Cloud Run URL for safety.
 const envUrl = (import.meta as any)?.env?.VITE_IMAGE_API_URL as string | undefined;
-const fallbackUrl = 'https://generate-diagram-569099138803.us-central1.run.app';
+const fallbackUrl = 'https://image-generation-service-569099138803.us-central1.run.app';
 const API_URL = (() => {
   const candidate = (envUrl || '').trim();
   try {
@@ -32,7 +32,7 @@ export const transformImageToDiagram = async (
         'Analyze the provided image data and return a clear, concise diagram explanation and a rendered diagram URL if available.',
     } as Record<string, unknown>;
 
-    const response = await fetch(API_URL, {
+    const response = await fetch(`${API_URL.replace(/\/$/, '')}/generate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
