@@ -22,3 +22,17 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# --- Security: ignore environment files and secrets ---
+# Never commit real secrets. Use .env.example for placeholders.
+.env
+.env.*
+!.env.example
+
+# Private keys and certificates
+*.pem
+*.key
+*.crt
+*.der
+*.pfx
+id_rsa*
