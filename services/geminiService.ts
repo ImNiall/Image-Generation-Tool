@@ -1,9 +1,21 @@
 
 import type { DiagramResult } from '../types';
 
-// Use the Cloud Run URL directly to avoid accidental overrides that may point
-// to the static site origin (which would cause XML 400 errors from GCS).
-const API_URL = 'https://generate-diagram-569099138803.us-central1.run.app';
+// Read API URL from a public build-time env so environments can be switched
+// without code changes. Fall back to the known Cloud Run URL for safety.
+const envUrl = (import.meta as any)?.env?.VITE_IMAGE_API_URL as string | undefined;
+const fallbackUrl = 'https://generate-diagram-569099138803.us-central1.run.app';
+const API_URL = (() => {
+  const candidate = (envUrl || '').trim();
+  try {
+    // Ensure absolute URL (avoid relative paths that could target the bucket)
+    if (candidate) {
+      const u = new URL(candidate);
+      if (u.protocol === 'http:' || u.protocol === 'https:') return u.toString();
+    }
+  } catch {}
+  return fallbackUrl;
+})();
 
 export const transformImageToDiagram = async (
   base64ImageData: string,
