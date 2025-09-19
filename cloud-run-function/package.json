@@ -4,6 +4,9 @@
   "main": "index.js",
   "private": true,
   "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "@google-cloud/functions-framework": "^3.4.0",
     "@google-cloud/vertexai": "^1.4.0"
