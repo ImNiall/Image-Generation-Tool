@@ -12,19 +12,22 @@ View your app in AI Studio: https://ai.studio/apps/drive/1uih5KUw8Yr4YIXU2njAM5K
 
 **Prerequisites:**  Node.js
 
-
 1. Install dependencies:
    `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+2. Configure frontend environment variables (public, build-time):
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+   - `VITE_IMAGE_API_URL` (points to your Cloud Run Function/HTTP service root)
 3. Run the app:
    `npm run dev`
 
 ## Environment variables and security
 
-- Use `.env.local` for local development and do not commit it. A committed `.env` has been removed and `.gitignore` now prevents it.
+- Use `.env.local` for local development of the frontend only and do not commit it.
 - Public (client) variables use the `VITE_` prefix. See [`./.env.example`](./.env.example) for the expected keys:
   - `VITE_SUPABASE_URL`
   - `VITE_SUPABASE_ANON_KEY`
-  - `VITE_IMAGE_API_URL`
-- Server-only secrets (e.g., `GEMINI_API_KEY`) must be stored in Google Secret Manager and mapped to the Cloud Run service as environment variables. Do not place server secrets in any `.env` committed to the repo.
-- If a key ever gets committed, rotate it immediately (e.g., Supabase Dashboard → Project Settings → API → Rotate anon key).
+  - `VITE_IMAGE_API_URL` (Cloud Run Function URL)
+- Server-only secrets must NOT be in the frontend env:
+  - `GEMINI_API_KEY` must be configured on the Cloud Run Function (prefer Google Secret Manager) and never exposed to the browser.
+- If any key is committed by mistake, rotate it immediately (e.g., Supabase Dashboard → Project Settings → API → Rotate anon key).
